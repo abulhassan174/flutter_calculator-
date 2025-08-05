@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'widgets/calculator_display.dart';
 import 'widgets/calculator_buttons.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 class Calculator extends StatefulWidget {
   @override
@@ -33,13 +34,16 @@ class _CalculatorState extends State<Calculator> {
   }
 
   String _evaluateExpression(String expression) {
-    // Very basic evaluation using Dart's `Expression` evaluator
-    // This is not secure or recommended for production
     try {
-      final result = double.parse(expression.replaceAll('×', '*').replaceAll('÷', '/'));
-      return result.toString();
+      ShuntingYardParser parser = ShuntingYardParser();
+      Expression exp = parser.parse(
+        expression.replaceAll('×', '*').replaceAll('÷', '/'),
+      );
+      ContextModel cm = ContextModel();
+      double eval = exp.evaluate(EvaluationType.REAL, cm);
+      return eval.toString();
     } catch (_) {
-      return expression;
+      return 'Error';
     }
   }
 
